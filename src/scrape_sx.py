@@ -5,14 +5,7 @@ from numpy import nan
 from bs4 import BeautifulSoup
 
 
-def _color_fill(detail_info, cc):
-	while cc < color_count:
-		cc+=1
-		detail_info[f'color_{cc}'] = nan()
-	return detail_info
-
-
-def _scrape_shoe(stockx_url):
+def _scrape_shoe(stockx_url, color_count, headers):
 	r = requests.get(stockx_url, headers=headers)
 
 	print(r)
@@ -24,7 +17,7 @@ def _scrape_shoe(stockx_url):
 	# shoe name
 	# Need to think of a way to get the name cleaned up into Brand, is it a retro?, actual name
 	shoe_name = soup.find('h1',{'class':'name'})
-	detail_info['name'] = shoe_name.text.lower()
+	detail_info = _ft_from_name(shoe_name.text.lower(), detail_info)
 
 	# gets details style, colorway, retail price, release date
 	# Clean but need to handle the colors
@@ -63,22 +56,71 @@ def _scrape_shoe(stockx_url):
 		elif '$' in d:
 			detail_info['avg_sale'] = float(d[19:])
 
-	return _color_fill(detail_info, cc)
+	return _color_fill(detail_info, cc), color_count
+
+
+def _scrape_shoe_pgs(url, headers):
+	attach = []
+	for p in range(1, 26):
+		s_url = url + f'?page={p}'
+		r = requests.get(stockx_url, headers=headers)
+		print(r)
+
+		soup = BeautifulSoup(r.content, 'lxml')
+		shoe_pgs = soup.find_all('div', {'class':'tile browse-tile'})
+		for shoe in shoe_pgs:
+			if '--' not in shoe.find('div', {'class':'price-line-div'}).text:
+				attach.append(shoe.find('a')['href'])
+	return attach
+
+
+
+
+def _color_fill(detail_info, cc):
+	while cc < color_count:
+		cc+=1
+		detail_info[f'color_{cc}'] = nan
+	return detail_info
+
+
+def _ft_from_name(s_name, detail_info):
+	detail_info['name'] = s_name
+	if 'retro' in s_name:
+		detail_info['retro'] = 1
+	else:
+		detail_info['retro'] = 0
+
+	if 'high' in s_name:
+		detail_info['cut'] = 3
+	elif 'mid' in s_name:
+		detail_info['cut'] = 2
+	elif 'low' in s_name:
+		detail_info['cut'] = 1
+	else:
+		detail_info['cut'] = 0
+
+	return detail_info
+
+
 
 
 
 # to test
 color_count = 1
 
-stockx_url = 'https://stockx.com/air-jordan-10-retro-seattle'
+stockx_url = 'https://stockx.com/retro-jordans'
+#stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
 #stockx_url =  'https://stockx.com/air-jordan-1-retro-high-unc-leather'
 # will get 403 response without this
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
 
-shoe_info = _scrape_shoe(stockx_url)
+base_url = 'https://stockx.com'
+print(_scrape_shoe_pgs(stockx_url, headers))
+#for url in stockx_url:
+	#shoe_info, color_count = _scrape_shoe(url, color_count, headers)
 
-for k,v in shoe_info.items():
-	print(f'{k} = {v}')
+	#for k,v in shoe_info.items():
+		#print(f'{k} = {v}')
 
 
 
