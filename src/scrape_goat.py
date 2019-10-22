@@ -6,7 +6,7 @@ from numpy import nan
 from bs4 import BeautifulSoup
 
 
-goat_url = 'https://www.goat.com/sneakers/air-jordan-10-retro-seattle-2019-310805-137'
+goat_url = 'https://www.goat.com/sneakers/air-jordan-12-retro-reverse-taxi-130690-017'
 
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
 r = requests.get(goat_url, headers=headers)
@@ -19,8 +19,7 @@ json_lst = []
 for t in test:
 	json_lst.append(json.loads(t.text))
 
-# Gets the silhouette
+# Scrapes only sku number to link back to OG shoe from stockx scrape
+# and the silhoutte
 print(json_lst[1]['itemListElement'][-1]['item']['name'])
-
-cap = soup.find('a', {'data-qa':'nutr-link-designer'})
-print(cap)
+print(json_lst[0]['sku'])

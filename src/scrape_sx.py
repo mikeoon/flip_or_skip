@@ -11,7 +11,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	print(r)
 
 	soup = BeautifulSoup(r.content, 'lxml')
-	detail_info = {'name': None, 'style': None, 'm_color': None, 'retail_price': None, 
+	detail_info = {'name': None,'sku':None, 'style': None, 'm_color': None, 'retail_price': None, 
 				'release_date': None, 'num_sales': None, 'avg_sale': None}
 
 	# shoe name
@@ -46,7 +46,6 @@ def _scrape_shoe(stockx_url, color_count, headers):
 
 
 	# gets gauge table, num sales, price premium, avg sale price
-	# NOT CLEANED YET
 	gauge_table = soup.find_all('div', {'class':'gauge-container'})
 
 	for i in gauge_table:
@@ -106,21 +105,21 @@ def _ft_from_name(s_name, detail_info):
 
 
 # to test
-color_count = 1
+color_count = 4
 
-stockx_url = 'https://stockx.com/retro-jordans'
-#stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
+#stockx_url = 'https://stockx.com/retro-jordans'
+stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
 #stockx_url =  'https://stockx.com/air-jordan-1-retro-high-unc-leather'
 # will get 403 response without this
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
 
 base_url = 'https://stockx.com'
-print(_scrape_shoe_pgs(stockx_url, headers))
-#for url in stockx_url:
-	#shoe_info, color_count = _scrape_shoe(url, color_count, headers)
+#print(_scrape_shoe_pgs(stockx_url, headers))
+for url in stockx_url:
+	shoe_info, color_count = _scrape_shoe(url, color_count, headers)
 
-	#for k,v in shoe_info.items():
-		#print(f'{k} = {v}')
+	for k,v in shoe_info.items():
+		print(f'{k} = {v}')
 
 
 
