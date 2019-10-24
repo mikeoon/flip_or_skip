@@ -19,6 +19,22 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	shoe_name = soup.find('h1',{'class':'name'})
 	detail_info = _ft_from_name(shoe_name.text.lower(), detail_info)
 
+	# get image(s) of shoe
+	# if stockx has 360 images, then it grabs all for that shoe
+	# if not, just the one is fine
+	img_area = soup.find('div',{'class':'image-container'}).find('img')
+	img_url = img_area['src']
+	if '-360.img' in img_url:
+		for n in range(1, 37):
+			if n <10:
+				# need to save url somewhere to download images, or run here
+				print(img_url.replace('img01', f'img0{n}'))
+			else:
+				# need to save url somewhere to download images, or run here
+				print(img_url.replace('img01', f'img{n}'))
+	# need to save url somewhere to download images, or run here
+	print(img_url)
+
 	# gets details style, colorway, retail price, release date
 	# Clean but need to handle the colors
 	detail_table = soup.find_all('div', {'class':'detail'})
@@ -109,7 +125,7 @@ color_count = 4
 
 #stockx_url = 'https://stockx.com/retro-jordans'
 stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
-#stockx_url =  'https://stockx.com/air-jordan-1-retro-high-unc-leather'
+#stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
 # will get 403 response without this
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
 
