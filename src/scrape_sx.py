@@ -16,7 +16,6 @@ def _scrape_shoe(stockx_url, color_count, headers):
 				'release_date': None, 'num_sales': None, 'avg_sale': None}
 
 	# shoe name
-	# Need to think of a way to get the name cleaned up into Brand, is it a retro?, actual name
 	shoe_name = soup.find('h1',{'class':'name'})
 	detail_info, s_name = _ft_from_name(shoe_name.text.lower(), detail_info)
 
@@ -25,7 +24,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	s_name = '_'.join(s_name.split())
 	# get image(s) of shoe
 	# if stockx has 360 images, then it grabs all for that shoe
-	# if not, just the one is fine
+	# if not, just the one
 	img_area = soup.find('div',{'class':'image-container'}).find('img')
 	img_url = img_area['src']
 	if '-360.img' in img_url:
@@ -45,7 +44,6 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	print('Done with images \n')
 
 	# gets details style, colorway, retail price, release date
-	# Clean but need to handle the colors
 	detail_table = soup.find_all('div', {'class':'detail'})
 
 	for i in detail_table:
@@ -103,14 +101,16 @@ def _scrape_shoe_pgs(url, headers, p=True):
 
 
 
-
+# If a shoe doesn't have that many colors
+# nans are filled into extra color rows to keep shape of database
 def _color_fill(detail_info, cc):
 	while cc < color_count:
 		cc+=1
 		detail_info[f'color_{cc}'] = nan
 	return detail_info
 
-
+# Creates features from the name of the shoe
+# Returns the name of the shoe as well
 def _ft_from_name(s_name, detail_info):
 	detail_info['name'] = s_name
 	if 'retro' in s_name:
@@ -131,29 +131,45 @@ def _ft_from_name(s_name, detail_info):
 
 
 
-def _test_dl_requests():
-	url = 'https://stockx-360.imgix.net/Air-Jordan-1-Retro-High-UNC-Leather/Images/Air-Jordan-1-Retro-High-UNC-Leather/Lv2/img01.jpg?auto=format,compress&w=559&q=90&dpr=2&updated_at=1565708126'
-	r = requests.get(url, allow_redirects=True)
-	open('test_img.jpg', 'wb').write(r.content)
-	print('I think this worked')
 
-# to test
-color_count = 4
 
-#stockx_url = 'https://stockx.com/retro-jordans'
-#stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
-stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
-# will get 403 response without this
-headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
+if __name__ == '__main__':
+	color_count = 4
+	shoe_brand_url = 'https://stockx.com/retro-jordans'
+	# will get 403 response without this
+	headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
+	base_url = 'https://stockx.com'
+	
+	# For tests
+	#stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
 
-base_url = 'https://stockx.com'
-# scrapes urls
-#_scrape_shoe_pgs(stockx_url, headers)
-for url in stockx_url:
-	shoe_info, color_count = _scrape_shoe(url, color_count, headers)
 
-	for k,v in shoe_info.items():
-		print(f'{k} = {v}')
+	print('Hello! Currently This only works for air_jordan\n')
+	print('Is it pickled already?(y/n)\n')
+	r_pickle = input()
+	if r_pickle.lower() == 'y':
+		from_pkl = True
+	else:
+		print('Okay, do you want to scrape or pickle?(s/p)\n')
+		r_work = input()
+		if r_work.lower() == 's':
+			from_pkl = False
+		else:
+			_scrape_shoe_pgs(stockx_url, headers)
+			break
+
+
+	if from_pkl:
+		with open('data/air_jordan/stockx_urls.pkl', 'rb') as file:
+			stockx_urls = pickle.load(file)
+	else:
+		stockx_urls = _scrape_shoe_pgs(shoe_brand_url, headers, p=False)
+
+	for url in stockx_urls:
+		shoe_info, color_count = _scrape_shoe(base_url+url, color_count, headers)
+
+		for k,v in shoe_info.items():
+			print(f'{k} = {v}')
 
 
 
