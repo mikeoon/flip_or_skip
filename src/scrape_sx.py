@@ -1,6 +1,7 @@
 import re
 import requests
 import datetime as dt
+import pickle
 from numpy import nan
 from bs4 import BeautifulSoup
 
@@ -17,23 +18,31 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	# shoe name
 	# Need to think of a way to get the name cleaned up into Brand, is it a retro?, actual name
 	shoe_name = soup.find('h1',{'class':'name'})
-	detail_info = _ft_from_name(shoe_name.text.lower(), detail_info)
+	detail_info, s_name = _ft_from_name(shoe_name.text.lower(), detail_info)
 
+	print(f'Begin Scrape of {s_name}:')
+
+	s_name = '_'.join(s_name.split())
 	# get image(s) of shoe
 	# if stockx has 360 images, then it grabs all for that shoe
 	# if not, just the one is fine
 	img_area = soup.find('div',{'class':'image-container'}).find('img')
 	img_url = img_area['src']
 	if '-360.img' in img_url:
+		# downloads imgs of shoes in jpg format from
+		# urls scraped from stockx
 		for n in range(1, 37):
+			# broken up here to handle the img url names
 			if n <10:
-				# need to save url somewhere to download images, or run here
-				print(img_url.replace('img01', f'img0{n}'))
+				r2 = requests.get(img_url.replace('img01', f'img0{n}'), allow_redirects=True)
+				open(f'../data/air_jordan/{s_name}_img0{n}.jpg', 'wb').write(r2.content)
 			else:
-				# need to save url somewhere to download images, or run here
-				print(img_url.replace('img01', f'img{n}'))
+				r2 = requests.get(img_url.replace('img01', f'img{n}'), allow_redirects=True)
+				open(f'../data/air_jordan/{s_name}_img{n}.jpg', 'wb').write(r2.content)
+			print(f'Downloaded image of  {n}')
 	# need to save url somewhere to download images, or run here
 	print(img_url)
+	print('Done with images \n')
 
 	# gets details style, colorway, retail price, release date
 	# Clean but need to handle the colors
@@ -74,7 +83,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	return _color_fill(detail_info, cc), color_count
 
 
-def _scrape_shoe_pgs(url, headers):
+def _scrape_shoe_pgs(url, headers, p=True):
 	attach = []
 	for p in range(1, 26):
 		s_url = url + f'?page={p}'
@@ -86,7 +95,11 @@ def _scrape_shoe_pgs(url, headers):
 		for shoe in shoe_pgs:
 			if '--' not in shoe.find('div', {'class':'price-line-div'}).text:
 				attach.append(shoe.find('a')['href'])
-	return attach
+	if p:
+		with open('../data/air_jordan/stockx_urls.pkl', 'wb') as f:
+			pickle.dump(attach, f)
+	else:
+		return attach
 
 
 
@@ -114,23 +127,28 @@ def _ft_from_name(s_name, detail_info):
 	else:
 		detail_info['cut'] = 0
 
-	return detail_info
+	return detail_info, s_name
 
 
 
-
+def _test_dl_requests():
+	url = 'https://stockx-360.imgix.net/Air-Jordan-1-Retro-High-UNC-Leather/Images/Air-Jordan-1-Retro-High-UNC-Leather/Lv2/img01.jpg?auto=format,compress&w=559&q=90&dpr=2&updated_at=1565708126'
+	r = requests.get(url, allow_redirects=True)
+	open('test_img.jpg', 'wb').write(r.content)
+	print('I think this worked')
 
 # to test
 color_count = 4
 
 #stockx_url = 'https://stockx.com/retro-jordans'
-stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
-#stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
+#stockx_url = ['https://stockx.com/air-jordan-10-retro-seattle','https://stockx.com/air-jordan-1-retro-high-unc-leather']
+stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
 # will get 403 response without this
 headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
 
 base_url = 'https://stockx.com'
-#print(_scrape_shoe_pgs(stockx_url, headers))
+# scrapes urls
+#_scrape_shoe_pgs(stockx_url, headers)
 for url in stockx_url:
 	shoe_info, color_count = _scrape_shoe(url, color_count, headers)
 
