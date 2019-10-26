@@ -50,6 +50,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 			s3.upload_file(Filename=local_file_name, 
 		    	           Bucket=bucket_name, 
 		        	       Key=local_file_name)
+			img_files.append(local_file_name)
 	else:
 		print(f'No 360 images, just the one for {s_name}')
 		img360 = False
@@ -60,6 +61,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 		s3.upload_file(Filename=local_file_name, 
 	    	           Bucket=bucket_name, 
 	        	       Key=local_file_name)
+		img_files.append(local_file_name)
 	
 
 	print('Done with images \n')
@@ -158,7 +160,7 @@ def _ft_from_name(s_name, detail_info):
 
 
 if __name__ == '__main__':
-	color_count = 4
+	color_count = 5
 	shoe_brand_url = 'https://stockx.com/retro-jordans'
 	# will get 403 response without this
 	headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
@@ -191,12 +193,14 @@ if __name__ == '__main__':
 		stockx_urls = _scrape_shoe_pgs(shoe_brand_url, headers, p=False)
 	
 	'''
-
+	data_shoe_df = []
 	for url in stockx_url:
 		shoe_info, color_count = _scrape_shoe(url, color_count, headers)
+		data_shoe_df.append(pd.DataFrame(shoe_info))
 
-		for k,v in shoe_info.items():
-			print(f'{k} = {v}')
+	shoe_df = pd.concat(data_shoe_df, ignore_index=True)
+	shoe_df.to_pickle('data/air_jordan/shoe_info_df.pkl')
+
 
 
 
