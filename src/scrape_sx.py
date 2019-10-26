@@ -1,9 +1,11 @@
-import re
 import requests
 import datetime as dt
 import pickle
+import boto3
+
 from numpy import nan
 from bs4 import BeautifulSoup
+
 
 
 def _scrape_shoe(stockx_url, color_count, headers):
@@ -27,6 +29,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	# if not, just the one
 	img_area = soup.find('div',{'class':'image-container'}).find('img')
 	img_url = img_area['src']
+	s3 = boto3.client('s3')
 	if '-360.img' in img_url:
 		# downloads imgs of shoes in jpg format from
 		# urls scraped from stockx
@@ -34,11 +37,17 @@ def _scrape_shoe(stockx_url, color_count, headers):
 			# broken up here to handle the img url names
 			if n <10:
 				r2 = requests.get(img_url.replace('img01', f'img0{n}'), allow_redirects=True)
-				open(f'../data/air_jordan/{s_name}_img0{n}.jpg', 'wb').write(r2.content)
+				open(f'data/air_jordan/{s_name}_img0{n}.jpg', 'wb').write(r2.content)
+				local_file_name = f'data/air_jordan/{s_name}_img0{n}.jpg'
 			else:
 				r2 = requests.get(img_url.replace('img01', f'img{n}'), allow_redirects=True)
-				open(f'../data/air_jordan/{s_name}_img{n}.jpg', 'wb').write(r2.content)
+				open(f'data/air_jordan/{s_name}_img{n}.jpg', 'wb').write(r2.content)
+				local_file_name = f'data/air_jordan/{s_name}_img{n}.jpg'
 			print(f'Downloaded image of  {n}')
+			bucket_name = 'mikeoon-galvanize-bucket'
+			s3.upload_file(Filename=local_file_name, 
+		    	           Bucket=bucket_name, 
+		        	       Key=local_file_name)
 	# need to save url somewhere to download images, or run here
 	print(img_url)
 	print('Done with images \n')
@@ -81,6 +90,8 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	return _color_fill(detail_info, cc), color_count
 
 
+# Scrapes all urls for jordan shoes that are on StockX
+# pickles it or just returns a list if one doesn't want the pickle
 def _scrape_shoe_pgs(url, headers, p=True):
 	attach = []
 	for p in range(1, 26):
@@ -141,9 +152,9 @@ if __name__ == '__main__':
 	base_url = 'https://stockx.com'
 	
 	# For tests
-	#stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
+	stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
 
-
+	'''
 	print('Hello! Currently This only works for air_jordan\n')
 	print('Is it pickled already?(y/n)\n')
 	r_pickle = input()
@@ -158,20 +169,21 @@ if __name__ == '__main__':
 			_scrape_shoe_pgs(stockx_url, headers)
 			break
 
+	from_pkl = True
 
 	if from_pkl:
 		with open('data/air_jordan/stockx_urls.pkl', 'rb') as file:
 			stockx_urls = pickle.load(file)
 	else:
 		stockx_urls = _scrape_shoe_pgs(shoe_brand_url, headers, p=False)
+	
+	'''
 
-	for url in stockx_urls:
-		shoe_info, color_count = _scrape_shoe(base_url+url, color_count, headers)
+	for url in stockx_url:
+		shoe_info, color_count = _scrape_shoe(url, color_count, headers)
 
 		for k,v in shoe_info.items():
 			print(f'{k} = {v}')
-
-
 
 
 
