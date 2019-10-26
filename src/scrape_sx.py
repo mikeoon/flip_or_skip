@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 
 def _scrape_shoe(stockx_url, color_count, headers):
 	r = requests.get(stockx_url, headers=headers)
+	img_files = []
 
 	print(r)
 
@@ -31,6 +32,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	img_url = img_area['src']
 	s3 = boto3.client('s3')
 	if '-360.img' in img_url:
+		img360 = True
 		# downloads imgs of shoes in jpg format from
 		# urls scraped from stockx
 		for n in range(1, 37):
@@ -48,9 +50,20 @@ def _scrape_shoe(stockx_url, color_count, headers):
 			s3.upload_file(Filename=local_file_name, 
 		    	           Bucket=bucket_name, 
 		        	       Key=local_file_name)
-	# need to save url somewhere to download images, or run here
-	print(img_url)
+	else:
+		print(f'No 360 images, just the one for {s_name}')
+		img360 = False
+		r2 = requests.get(img_url, allow_redirects=True)
+		open(f'data/air_jordan/{s_name}_img01.jpg', 'wb').write(r2.content)
+		local_file_name = f'data/air_jordan/{s_name}_img01.jpg'
+		bucket_name = 'mikeoon-galvanize-bucket'
+		s3.upload_file(Filename=local_file_name, 
+	    	           Bucket=bucket_name, 
+	        	       Key=local_file_name)
+	
+
 	print('Done with images \n')
+	detail_info['img360'] = img360
 
 	# gets details style, colorway, retail price, release date
 	detail_table = soup.find_all('div', {'class':'detail'})
@@ -105,7 +118,7 @@ def _scrape_shoe_pgs(url, headers, p=True):
 			if '--' not in shoe.find('div', {'class':'price-line-div'}).text:
 				attach.append(shoe.find('a')['href'])
 	if p:
-		with open('../data/air_jordan/stockx_urls.pkl', 'wb') as f:
+		with open('data/air_jordan/stockx_urls.pkl', 'wb') as f:
 			pickle.dump(attach, f)
 	else:
 		return attach
