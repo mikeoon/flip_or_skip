@@ -1,7 +1,9 @@
 import requests
-import datetime as dt
 import pickle
 import boto3
+import datetime as dt
+import subprocess as sp
+import pandas as pd
 
 from numpy import nan
 from bs4 import BeautifulSoup
@@ -15,6 +17,11 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	print(r)
 
 	soup = BeautifulSoup(r.content, 'lxml')
+
+	while soup == None:
+		r = requests.get(stockx_url, headers=headers)
+		soup = BeautifulSoup(r.content, 'lxml')
+
 	detail_info = {'name': None,'sku':None, 'style': None, 'm_color': None, 'retail_price': None, 
 				'release_date': None, 'num_sales': None, 'avg_sale': None}
 
@@ -28,7 +35,14 @@ def _scrape_shoe(stockx_url, color_count, headers):
 	# get image(s) of shoe
 	# if stockx has 360 images, then it grabs all for that shoe
 	# if not, just the one
-	img_area = soup.find('div',{'class':'image-container'}).find('img')
+
+
+	img_area = soup.find('div',{'class':'image-container'})
+	if img_area == None:
+		img_area = soup.find('div', {'class': 'product-media'}).find('img')
+	else:
+		img_area = img_area.find('img')
+	
 	img_url = img_area['src']
 	s3 = boto3.client('s3')
 	if '-360.img' in img_url:
@@ -100,7 +114,7 @@ def _scrape_shoe(stockx_url, color_count, headers):
 		if '#' in d:
 			detail_info['num_sales'] = int(d[10:])
 		elif '$' in d:
-			detail_info['avg_sale'] = float(d[19:])
+			detail_info['avg_sale'] = float(d[19:].replace(',', ''))
 
 	return _color_fill(detail_info, cc), color_count
 
@@ -167,9 +181,9 @@ if __name__ == '__main__':
 	base_url = 'https://stockx.com'
 	
 	# For tests
-	stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
+	#stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
 
-	'''
+
 	print('Hello! Currently This only works for air_jordan\n')
 	print('Is it pickled already?(y/n)\n')
 	r_pickle = input()
@@ -182,9 +196,7 @@ if __name__ == '__main__':
 			from_pkl = False
 		else:
 			_scrape_shoe_pgs(stockx_url, headers)
-			break
 
-	from_pkl = True
 
 	if from_pkl:
 		with open('data/air_jordan/stockx_urls.pkl', 'rb') as file:
@@ -192,13 +204,14 @@ if __name__ == '__main__':
 	else:
 		stockx_urls = _scrape_shoe_pgs(shoe_brand_url, headers, p=False)
 	
-	'''
 	data_shoe_df = []
-	for url in stockx_url:
-		shoe_info, color_count = _scrape_shoe(url, color_count, headers)
-		data_shoe_df.append(pd.DataFrame(shoe_info))
+	for i, url in enumerate(stockx_urls):
+		shoe_info, color_count = _scrape_shoe(base_url+url, color_count, headers)
+		data_shoe_df.append(pd.DataFrame(shoe_info, index=[i]))
+		print(f'Done with shoe {i} in pickled list')
 
-	shoe_df = pd.concat(data_shoe_df, ignore_index=True)
+	print('pickling shoe information')
+	shoe_df = pd.concat(data_shoe_df)
 	shoe_df.to_pickle('data/air_jordan/shoe_info_df.pkl')
 
 
