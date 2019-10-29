@@ -18,15 +18,19 @@ def _scrape_shoe(stockx_url, color_count, headers):
 
 	soup = BeautifulSoup(r.content, 'lxml')
 
-	while soup == None:
-		r = requests.get(stockx_url, headers=headers)
-		soup = BeautifulSoup(r.content, 'lxml')
 
 	detail_info = {'name': None,'sku':None, 'style': None, 'm_color': None, 'retail_price': None, 
 				'release_date': None, 'num_sales': None, 'avg_sale': None}
 
 	# shoe name
 	shoe_name = soup.find('h1',{'class':'name'})
+	while shoe_name == None:
+		print('Sorry, slight hold up')
+		r = requests.get(stockx_url, headers=headers)
+		soup = BeautifulSoup(r.content, 'lxml')
+		shoe_name = soup.find('h1',{'class':'name'})
+
+
 	detail_info, s_name = _ft_from_name(shoe_name.text.lower(), detail_info)
 
 	print(f'Begin Scrape of {s_name}:')
@@ -123,10 +127,11 @@ def _scrape_shoe(stockx_url, color_count, headers):
 # pickles it or just returns a list if one doesn't want the pickle
 def _scrape_shoe_pgs(url, headers, p=True):
 	attach = []
-	for p in range(1, 26):
-		s_url = url + f'?page={p}'
-		r = requests.get(stockx_url, headers=headers)
+	for pg in range(1, 26):
+		s_url = url + f'?page={pg}'
+		r = requests.get(s_url, headers=headers)
 		print(r)
+		print(s_url)
 
 		soup = BeautifulSoup(r.content, 'lxml')
 		shoe_pgs = soup.find_all('div', {'class':'tile browse-tile'})
@@ -197,15 +202,15 @@ if __name__ == '__main__':
 		else:
 			_scrape_shoe_pgs(stockx_url, headers)
 
-
 	if from_pkl:
 		with open('data/air_jordan/stockx_urls.pkl', 'rb') as file:
 			stockx_urls = pickle.load(file)
 	else:
 		stockx_urls = _scrape_shoe_pgs(shoe_brand_url, headers, p=False)
-	
+
+
 	data_shoe_df = []
-	for i, url in enumerate(stockx_urls):
+	for i, url in enumerate(stockx_urls[128:]):
 		shoe_info, color_count = _scrape_shoe(base_url+url, color_count, headers)
 		data_shoe_df.append(pd.DataFrame(shoe_info, index=[i]))
 		print(f'Done with shoe {i} in pickled list')
@@ -213,7 +218,6 @@ if __name__ == '__main__':
 	print('pickling shoe information')
 	shoe_df = pd.concat(data_shoe_df)
 	shoe_df.to_pickle('data/air_jordan/shoe_info_df.pkl')
-
 
 
 
