@@ -12,11 +12,11 @@ def combine_shoe_pkls(brand):
 	df = pd.concat(shoe_rows, axis=0, sort=True)
 	df = df.drop(['color_5', 'sku'], axis=1)
 	df = df.rename(columns={'avg_sale': 'avg_resale'}).sort_index()
-	return df.sort_index()
+	df = df.sort_index()
+	return _remove_duplicate_shoes(df)
 
 
-
-def remove_duplicate_shoes(df):
+def _remove_duplicate_shoes(df):
 	duplicates = set()
 	dup_shoes = []
 	for i, shoe in df.iterrows():
