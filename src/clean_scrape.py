@@ -10,10 +10,14 @@ def combine_shoe_pkls(brand):
 	shoe_rows = [pd.read_pickle(shoe) for shoe in shoe_pkls]
 
 	df = pd.concat(shoe_rows, axis=0, sort=True)
-	df = df.drop(['color_5', 'sku'], axis=1)
+	df = df.drop(['color_5','sku'], axis=1)
 	df = df.rename(columns={'avg_sale': 'avg_resale'}).sort_index()
 	df = df.sort_index()
-	return _remove_duplicate_shoes(df)
+
+	df = _remove_duplicate_shoes(df)
+	df = _remove_missing_resale(df)
+
+	return df
 
 
 def _remove_duplicate_shoes(df):
@@ -26,6 +30,9 @@ def _remove_duplicate_shoes(df):
 			df.drop(i, axis=0, inplace=True)
 	return df
 
+def _remove_missing_resale(df):
+	no_avg = df[df['avg_resale'].isnull()].index
+	return df.drop(index=no_avg, inplace=True)
 
 
 
