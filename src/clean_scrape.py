@@ -16,6 +16,9 @@ def combine_shoe_pkls(brand):
 
 	df = _remove_duplicate_shoes(df)
 	df = _remove_missing_resale(df)
+	df = _remove_missing_retail(df)
+	df = _fix_types(df)
+
 
 	return df
 
@@ -30,9 +33,22 @@ def _remove_duplicate_shoes(df):
 			df.drop(i, axis=0, inplace=True)
 	return df
 
+
 def _remove_missing_resale(df):
 	no_avg = df[df['avg_resale'].isnull()].index
-	return df.drop(index=no_avg, inplace=True)
+	return df.drop(index=no_avg)
+
+
+def _remove_missing_retail(df):
+	no_retail = df[df['retail_price'].isnull()].index
+	return df.drop(index=no_retail)
+
+def _fix_types(df):
+	df['avg_resale'] = df['avg_resale'].map(lambda x: float(x))
+	df['retail_price'] = df['retail_price'].map(lambda x: float(x))
+	df['num_sales'] = df['num_sales'].map(lambda x: int(x))
+	return df
+
 
 
 
