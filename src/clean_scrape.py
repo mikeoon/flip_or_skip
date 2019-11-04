@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import glob
+import re
 
 
 
@@ -14,6 +15,7 @@ def combine_shoe_pkls(brand):
 	df = df.rename(columns={'avg_sale': 'avg_resale'}).sort_index()
 	df = df.sort_index()
 
+	df = _remove_child_shoes(df)
 	df = _remove_duplicate_shoes(df)
 	df = _remove_missing_resale(df)
 	df = _remove_missing_retail(df)
@@ -43,11 +45,21 @@ def _remove_missing_retail(df):
 	no_retail = df[df['retail_price'].isnull()].index
 	return df.drop(index=no_retail)
 
+
+def _remove_child_shoes(df):
+	pattern = re.compile("\((td|ps|gs)\)")
+	for i,shoe in df.iterrows():
+		if pattern.search(shoe['name'].lower()):
+			df.drop(i, axis=0, inplace=True)
+	return df
+
+
 def _fix_types(df):
 	df['avg_resale'] = df['avg_resale'].map(lambda x: float(x))
 	df['retail_price'] = df['retail_price'].map(lambda x: float(x))
 	df['num_sales'] = df['num_sales'].map(lambda x: int(x))
 	return df
+
 
 
 
