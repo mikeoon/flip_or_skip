@@ -20,6 +20,7 @@ def combine_shoe_pkls(brand):
 	df = _remove_missing_resale(df)
 	df = _remove_missing_retail(df)
 	df = _fix_types(df)
+	df = _add_columns(df)
 
 
 	return df
@@ -58,6 +59,12 @@ def _fix_types(df):
 	df['avg_resale'] = df['avg_resale'].map(lambda x: float(x))
 	df['retail_price'] = df['retail_price'].map(lambda x: float(x))
 	df['num_sales'] = df['num_sales'].map(lambda x: int(x))
+	return df
+
+def _add_columns(df, threshold=0):
+	df['net_gain'] = df['avg_resale'] - df['retail_price']
+	df['net_profit'] = (df['avg_resale'] - (df['avg_resale'] * 0.125)) - df['retail_price']
+	df['flip'] = df['net_profit'] > threshold
 	return df
 
 
