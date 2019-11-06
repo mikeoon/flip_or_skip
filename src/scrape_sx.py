@@ -2,9 +2,10 @@ import requests
 import pickle
 import boto3
 import datetime as dt
-import subprocess as sp
 import pandas as pd
 
+from random import randint
+from time import sleep
 from numpy import nan
 from bs4 import BeautifulSoup
 
@@ -31,7 +32,7 @@ def _scrape_shoe(stockx_url, color_count, headers, brand):
 		shoe_name = soup.find('h1',{'class':'name'})
 
 
-	detail_info, s_name = _ft_from_name(shoe_name.text.lower(), detail_info)
+	detail_info, s_name = _ft_from_name(shoe_name.text.lower().replace('/', '_'), detail_info)
 
 	print(f'Begin Scrape of {s_name}:')
 
@@ -91,21 +92,21 @@ def _scrape_shoe(stockx_url, color_count, headers, brand):
 		d = i.text.lower().strip().split(' ')
 		# Breaks down the string into parts so better store data
 		if d[0] == 'retail':
-			detail_info['retail_price'] = float(d[2][1:])
+			detail_info['retail_price'] = float(d[2][1:].replace(',', ''))
 		elif d[0] == 'release':
 			temp = [int(t) for t in d[2].split('/')]
 			detail_info['release_date'] = dt.date(temp[2], temp[0], temp[1])
 		elif d[0] == 'colorway':
 			colors = i.text.lower().split('/')
 			if len(colors) > 1:
-				detail_info['m_color'] = colors[0].split(' ')[1]
+				detail_info['m_color'] = colors[0].replace('colorway', '').strip()
 				cc = 0
 				for i, c in enumerate(colors[1].split('-')):
 					detail_info[f'color_{i}'] = c
 					cc+=1
 			else:
 				colors = i.text.lower().split()
-				detail_info['m_color'] = colors[0]
+				detail_info['m_color'] = colors[0].replace('colorway', '').strip()
 				cc = 0
 				for i, c in enumerate(colors[2:]):
 					print(c)
@@ -137,6 +138,36 @@ def _scrape_shoe(stockx_url, color_count, headers, brand):
 
 	return _color_fill(detail_info, cc), color_count
 
+
+# Only used if the m_colors in the above code fails
+def _re_scrape_color(url):
+	r = requests.get(url, headers=headers)
+	img_files = []
+
+	print(r)
+
+	soup = BeautifulSoup(r.content, 'lxml')
+	shoe_name = soup.find('h1',{'class':'name'})
+
+	while shoe_name == None:
+		print('Sorry, slight hold up')
+		sleep(randint(2, 4))
+		r = requests.get(url, headers=headers)
+		soup = BeautifulSoup(r.content, 'lxml')
+		shoe_name = soup.find('h1',{'class':'name'})
+	shoe_name = shoe_name.text.lower().replace('/', '_')
+
+	shoe_colors = {'name':shoe_name}
+
+	detail_table = soup.find_all('div', {'class':'detail'})
+	for i in detail_table:
+		d = i.text.lower().strip().split(' ')
+		if d[0] == 'colorway':
+			colors = i.text.lower().split('/')
+			if len(colors) > 1:
+				shoe_colors['m_color'] = colors[0].replace('colorway', '').strip()
+
+	return shoe_colors
 
 # Scrapes all urls for jordan shoes that are on StockX
 # pickles it or just returns a list if one doesn't want the pickle
@@ -199,6 +230,7 @@ if __name__ == '__main__':
 						'nike':'https://stockx.com/nike'}
 	# will get 403 response without this
 	headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
+	#headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:70.0) Gecko/20100101 Firefox/70.0'}
 	base_url = 'https://stockx.com'
 	
 	# For tests
@@ -228,15 +260,31 @@ if __name__ == '__main__':
 
 
 	# if it breaks, need to update the i as well to whatever the base is
-
-	stop_point = 1
-	for i, url in enumerate(stockx_urls[:stop_point]):
+	# can't get shoe 116... need to figure out why
+	stop_point = 0
+	for i, url in enumerate(stockx_urls[stop_point:]):
 		shoe_info, color_count = _scrape_shoe(base_url+url, color_count, headers, brand)
 		new_shoe = pd.DataFrame(shoe_info, index=[i+stop_point])
 		print('pickling shoe information')
 
 		new_shoe.to_pickle(f'data/{brand}/shoe_details/shoe{i+stop_point}.pkl')
 		print(f'Done with shoe {i+stop_point} in pickled list\n')
+	
+	'''
+	# To rescrape colors, m_colors in main df
+	redo_colors = []
+	for i, url in enumerate(stockx_urls[stop_point:]):
+		row = _re_scrape_color(base_url+url)
+		print(row)
+		new_color = pd.DataFrame(row, index=[i+stop_point])
+		new_color.to_pickle(f'data/{brand}/m_color/shoe{i+stop_point}.pkl')
+
+		sleep(randint(2, 4))
+
+		print(f'Done with shoe{i+stop_point}')
+		print()
+	'''
+
 
 
 
