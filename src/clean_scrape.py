@@ -20,6 +20,7 @@ def combine_shoe_pkls(brand):
 	df = _remove_missing_resale(df)
 	df = _remove_missing_retail(df)
 	df = _fix_types(df)
+	df = _fix_m_color(df, brand)
 	df = _add_columns(df)
 
 
@@ -61,12 +62,23 @@ def _fix_types(df):
 	df['num_sales'] = df['num_sales'].map(lambda x: int(x))
 	return df
 
+
+def _fix_m_color(df, brand):
+	pathname = f'data/{brand}/m_color/*.pkl'
+	color_pkls = glob.iglob(pathname)
+	color_rows = [pd.read_pickle(shoe) for shoe in color_pkls]
+	df = df.drop('m_color', axis=1)
+	color_df = pd.concat(color_rows, sort=True)
+	color_df = color_df.set_index('name')
+	return df.join(color_df, on='name')
+
+
+
 def _add_columns(df, threshold=0):
 	df['net_gain'] = df['avg_resale'] - df['retail_price']
 	df['net_profit'] = (df['avg_resale'] - (df['avg_resale'] * 0.125)) - df['retail_price']
 	df['flip'] = df['net_profit'] > threshold
 	return df
-
 
 
 
