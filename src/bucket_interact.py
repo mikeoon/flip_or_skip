@@ -67,7 +67,7 @@ def find_broken_imgs(brand):
 
 
 
-
+# Not finished yet
 def delete_broken_imgs(brand):
 	s3 = boto3.client('s3')
 	shoe_set = set()
