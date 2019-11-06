@@ -15,7 +15,7 @@ def dummy_colors(df, mcolor=True, num_colors=1):
 		df['m_color_'+c] = (df['true_m_color'] == c) * 1
 	
 
-	for i in range(,num_colors):
+	for i in range(num_colors):
 		u_color = df[f'color_{i}'].unique()
 		for c in u_color:
 			if type(c) != type(1.0):
@@ -25,15 +25,17 @@ def dummy_colors(df, mcolor=True, num_colors=1):
 
 def patch_up_m_color(df, brand):
 	if brand == 'nike':
-		df.loc[91, 'true_m_color'] = 'red'
-		df.loc[128, 'true_m_color'] = 'multi-color'
-		df.loc[215, 'true_m_color'] = 'teal tint'
-		df.loc[419, 'true_m_color'] = 'black'
-		df.loc[437, 'true_m_color'] = 'black'
-		df.loc[503, 'true_m_color'] = 'white pure platinum'
-		df.loc[987, 'true_m_color'] = 'cinncinati reds'
+		df.loc[91, 'm_color'] = 'red'
+		df.loc[128, 'm_color'] = 'multi-color'
+		df.loc[215, 'm_color'] = 'teal tint'
+		df.loc[419, 'm_color'] = 'black'
+		df.loc[437, 'm_color'] = 'black'
+		df.loc[503, 'm_color'] = 'white pure platinum'
+		df.loc[987, 'm_color'] = 'cinncinati reds'
 	elif brand ==' air_jordan':
 		print('THIS IS NOT IMPLEMENTED YET')
+
+	return df
 
 
 
