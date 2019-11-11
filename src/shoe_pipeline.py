@@ -40,6 +40,19 @@ def _dummy_release_date(df):
 	return df.drop('release_day', axis=1, inplace=True)
 
 
+def _dummy_silhouette(df, brand):
+	if brand == 'nike':
+		styles = set(['max 97','max 95', 'max 720', 'max 270', 'react', 'presto', 'lebron', 'kobe', 'vapormax', 'kyrie', 
+               'pg','air force 1', 'sb', 'sb dunk', 'blazer', 'kd', 'foamposite', 'tailwind', 'cortez', 
+               'adapt', 'huarache'])
+	elif brand == 'air_jordan':
+		styles = styles_ = set(['jordan '+ str(i) for i in range(1, 20)] + ['xxx', 'xxx1', 'xxxii', 'xxxiii'])
+
+	for s in styles:
+		df[brand +f'_{s}'] = [1 if s in name else 0 for name in df['name']]
+
+	return df
+
 
 # Hard coded, this is for my first model to clean up patchy data
 def _patch_up_m_color(df, brand):
@@ -92,6 +105,7 @@ def flip_skip_pipeline(df, brand, num_c=2):
 	_dummy_colors(model_df, num_colors=num_c)
 	_dummy_cut(model_df)
 	_dummy_release_date(model_df)
+	_dummy_silhouette(model_df, brand)
 
 	return model_df.drop(drop_cols, axis=1), model_targets
 
