@@ -5,9 +5,15 @@ import numpy as np
 
 
 def download_imgs(brand):
+	'''
+	Download all imgs of the s3 bucket
+	currently hard coded to all the images possible to scrape from stockX
+
+	Places images in data/brand directory
+	'''
 	s3 = boto3.client('s3')
 	shoe_set = set()
-	bucket_name = 'mikeoon-galvanize-bucket'
+	bucket_name = 'YOUR_BUCKET_NAME'
 	first = True
 	st_point = None
 	# Hard coded to the max number of jordans
@@ -34,8 +40,14 @@ def download_imgs(brand):
 		print(f'Downloaded {s}')
 
 
-# For only image directory that is local
 def find_broken_imgs(brand):
+	'''
+	Not all images are valid, some were broken/currupt
+	Checks all images to see if valid
+
+	dumps broken img paths in to a pickled dictionary
+
+	'''
 	shoe_paths=dict()
 	for k,v in img_names.items():
 		temp_paths = []
@@ -71,7 +83,7 @@ def find_broken_imgs(brand):
 def delete_broken_imgs(brand):
 	s3 = boto3.client('s3')
 	shoe_set = set()
-	bucket_name = 'mikeoon-galvanize-bucket'
+	bucket_name = 'YOUR_BUCKET_NAME'
 
 
 
