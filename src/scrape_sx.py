@@ -12,6 +12,16 @@ from bs4 import BeautifulSoup
 
 
 def _scrape_shoe(stockx_url, color_count, headers, brand):
+	'''
+	Main function to scrape the data from stock X
+
+	Download images of the shoes locally
+	Then push it to an S3 bucket - can take this out
+
+	return a dictionary of the shoe details
+	'''
+
+	bucket_name = 'your bucket name'
 	r = requests.get(stockx_url, headers=headers)
 	img_files = []
 
@@ -65,7 +75,6 @@ def _scrape_shoe(stockx_url, color_count, headers, brand):
 				open(f'data/{brand}/{s_name}_img{n}.jpg', 'wb').write(r2.content)
 				local_file_name = f'data/{brand}/{s_name}_img{n}.jpg'
 			print(f'Downloaded image of  {n}')
-			bucket_name = 'mikeoon-galvanize-bucket'
 			s3.upload_file(Filename=local_file_name, 
 		    	           Bucket=bucket_name, 
 		        	       Key=local_file_name)
@@ -76,7 +85,6 @@ def _scrape_shoe(stockx_url, color_count, headers, brand):
 		r2 = requests.get(img_url, allow_redirects=True)
 		open(f'data/{brand}/{s_name}_img01.jpg', 'wb').write(r2.content)
 		local_file_name = f'data/{brand}/{s_name}_img01.jpg'
-		bucket_name = 'mikeoon-galvanize-bucket'
 		s3.upload_file(Filename=local_file_name, 
 	    	           Bucket=bucket_name, 
 	        	       Key=local_file_name)
@@ -176,6 +184,7 @@ def _scrape_shoe_pgs(url, headers, brand, p=True):
 	for pg in range(1, 26):
 		s_url = url + f'?page={pg}'
 		r = requests.get(s_url, headers=headers)
+		# To know where the scrape is
 		print(r)
 		print(s_url)
 
@@ -225,17 +234,24 @@ def _ft_from_name(s_name, detail_info):
 
 
 if __name__ == '__main__':
+	'''
+	Will ask if you want to scrape the pages of the sneaker brand
+	currently only [nike, air_jordan] aka urls
+
+	Or if you want to scrape the shoes from the urls already saved and pickled
+
+	returns each shoe as a df pickle
+
+	Use the clean_scrape.py file to clean up into one df
+	'''
+
 	color_count = 5
 	shoe_brand_urls = {'air_jordan':'https://stockx.com/retro-jordans', 
 						'nike':'https://stockx.com/nike'}
 	# will get 403 response without this
-	headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'}
-	#headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:70.0) Gecko/20100101 Firefox/70.0'}
+	headers = {'User-Agent' : 'your user agent'}
 	base_url = 'https://stockx.com'
 	
-	# For tests
-	#stockx_url =  ['https://stockx.com/air-jordan-6-retro-travis-scott']
-
 
 	print('\nHello! what shoe brand do you want?\n [air_jordan, nike]?')
 	brand = input()
@@ -259,8 +275,8 @@ if __name__ == '__main__':
 			stockx_urls = _scrape_shoe_pgs(shoe_brand_urls[brand], headers, brand, p=False)
 
 
-	# if it breaks, need to update the i as well to whatever the base is
-	# can't get shoe 116... need to figure out why
+	# Stop point so that you can continue where you left off.
+	# Either cause you got kicked out or something unexpected occured
 	stop_point = 0
 	for i, url in enumerate(stockx_urls[stop_point:]):
 		shoe_info, color_count = _scrape_shoe(base_url+url, color_count, headers, brand)
@@ -271,7 +287,7 @@ if __name__ == '__main__':
 		print(f'Done with shoe {i+stop_point} in pickled list\n')
 	
 	'''
-	# To rescrape colors, m_colors in main df
+	# To rescrape colors, m_colors in main df if needed
 	redo_colors = []
 	for i, url in enumerate(stockx_urls[stop_point:]):
 		row = _re_scrape_color(base_url+url)
