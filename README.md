@@ -1,4 +1,4 @@
-# flip_or_skip
+# Flip or Skip?
 
 High profile sneakers are difficult to purchase upon their retail release. If you miss out, your only chance to purchase the sneaker is via the resale market, where the resale value can be over 400% of their original retail value! I built a model that predicts if a sneaker will resell at a profit before its release.
 
