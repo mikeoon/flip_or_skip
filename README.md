@@ -2,6 +2,8 @@
 
 High profile sneakers are difficult to purchase upon their retail release. If you miss out, your only chance to purchase the sneaker is via the resale market, where the resale value can be over 400% of their original retail value! I built a model that predicts if a sneaker will resell at a profit before its release.
 
+![alt text](https://drive.google.com/file/d/1XzR-qzMD8U7X2nv_TONsPaX1LumVJwXO/view)
+
 Are they worth purchasing to resell? (Flip)
 Or should we just avoid buying them? (Skip)
 
