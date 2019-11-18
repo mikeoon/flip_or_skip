@@ -8,12 +8,12 @@ Or should we just avoid buying them? (Skip)
 # Data Collection and Process:
 I scraped data from StockX.com. Using beautiful soup, I was able to scrape 765 Jordan sneakers and 922 Nike sneakers. I removed grade school, toddler, and preschool sneakers. I was also able to scrape features of the sneakers such as:
 
-⋅⋅* Name
-⋅⋅* Colors
-⋅⋅* Retail Cost
-⋅⋅* Release Date
-⋅⋅* Images
-⋅⋅* Average Resale price 
+* Name
+* Colors
+* Retail Cost
+* Release Date
+* Images
+* Average Resale price 
 
 The images were main profile views of the sneakers. Some sneakers on stockX even had 36 images of the entire sneaker.
 
@@ -27,23 +27,23 @@ Most of the features I was able to collect for each sneaker were categorical. Th
 
 Once my features were prepped, these are the features currently used for my model:
 
-⋅⋅* m_color
-⋅⋅* color_0
-⋅⋅* color_1
-⋅⋅* retro (only for jordan)
-⋅⋅* cut (none, low, mid, high)
-⋅⋅* Silhouette
-⋅⋅* Day of the Week Released
-⋅⋅* Month Sneaker was Released
-⋅⋅* Retail Price
+* m_color
+* color_0
+* color_1
+* retro (only for jordan)
+* cut (none, low, mid, high)
+* Silhouette
+* Day of the Week Released
+* Month Sneaker was Released
+* Retail Price
 
 
 # Model:
-## Random Forest Classifier
+### Random Forest Classifier
 After working through different models, I ended up choosing Random Forests.
 I first utilized a Random Forest Classifier to predict if a sneaker would flip or not. The model will output a probability of a sneaker being a flip or not.
 
-### Nike
+#### Nike
 | Scoring Metric| Score (%)     |
 | ------------- |:-------------:|
 | Accuracy      | 66.67%        |
@@ -52,7 +52,7 @@ I first utilized a Random Forest Classifier to predict if a sneaker would flip o
 
 The Nike model’s main concern is it is not predicting many sneakers to be a flip. However, the good news is my model is precise when it comes to the sneakers it has actually identified as a flip.
 
-### Jordan
+#### Jordan
 | Scoring Metric| Score (%)     |
 | ------------- |:-------------:|
 | Accuracy      | 70.83%        |
@@ -61,19 +61,19 @@ The Nike model’s main concern is it is not predicting many sneakers to be a fl
 
 The Jordan model is a bit better. The model is classifying more sneakers are a flip than the Nike model while maintaining the same amount of precision. 
 
-## Random Forest Regressor
+### Random Forest Regressor
 Predicting actual resale price: Random Forest Regressor
 
 Using the same features as above and a Random Forest, I predicted the actual resale value of these sneakers. Unfortunately it did not do that well.
 
-### Nike
+#### Nike
 | Loss Function                 | Value         |
 | ------------------------------|:-------------:|
 | Mean Squared Error            | 522,335.77    |
 | Root Mean Absolute Error      | $722.73       |
 | Mean Absolute Error           | $165.15       |
 
-### Jordan
+#### Jordan
 | Loss Function                 | Value         |
 | ------------------------------|:-------------:|
 | Mean Squared Error            | 236,946.70    |
@@ -99,7 +99,7 @@ Calculating the Area Under the Curve (AUC) we get scores of 0.75286 for Nike and
 
 
 # Next Steps:
-## More features:
+##### More features:
 All but one of my features my model currently uses are categorical. A few features I want to use for my next models are:
 
 Social Media Impact
