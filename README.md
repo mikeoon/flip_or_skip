@@ -6,7 +6,7 @@ Are they worth purchasing to resell? (Flip)
 Or should we just avoid buying them? (Skip)
 
 ##### A plot showing sneaker retail prices and resale prices for 50 Nike Sneakers
-![alt text](data/img/flip_or_skip_plt.png "retail v resale")
+![](data/img/flip_or_skip_plt.png "retail v resale")
 
 # Data Collection and Process:
 I scraped data from StockX.com. Using beautiful soup, I was able to scrape 765 Jordan sneakers and 922 Nike sneakers. I removed grade school, toddler, and preschool sneakers. I was also able to scrape features of the sneakers such as:
@@ -20,7 +20,7 @@ I scraped data from StockX.com. Using beautiful soup, I was able to scrape 765 J
 
 The images were main profile views of the sneakers. Some sneakers on stockX even had 36 images of the entire sneaker.
 
-![alt text](data/img/jordan_4_retro_bred_img.jpg "Jordan 4 Bred")
+![](data/img/jordan_4_retro_bred_img.jpg "Jordan 4 Bred")
 
 I was able to store the images into an AWS S3 bucket while the rest of the was data was stored into a pandas data frame.
 
@@ -86,8 +86,10 @@ Using the same features as above and a Random Forest, I predicted the actual res
 
 I believe this is due to my data I have collected. There are sneakers in my dataset that have extremely high resale value. My mean for Nike resale value is 253.91 with a standard diviation of 565.99. For Jordan my mean is 256.14 with a standard deviation of 312.59. My dataset is skewed when it comes to the resale values of sneakers:
 
-![alt text](data/img/nike_dist_rv.png "Nike Resale Distribution")
-![alt text](data/img/jordan_dist_rv.png "Jordan Resale Distribution")
+ 
+Nike                                                      |  Jordan
+:-------------------------------------------------------_:|:-------------------------------------------------------------:
+![](data/img/nike_dist_rv.png "Nike Resale Distribution") |  ![](data/img/jordan_dist_rv.png "Jordan Resale Distribution")
 
 Because of this, I believe my random forest regressor, which uses mean squared error as a loss function, uses the mean of the respective sneaker’s resale value. This leads to poor performance in terms of predicting the resale value.
 
