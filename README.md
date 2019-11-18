@@ -88,7 +88,7 @@ I believe this is due to my data I have collected. There are sneakers in my data
 
  
 |Nike                                                      |  Jordan                                                       | 
-|:-------------------------------------------------------_:|:-------------------------------------------------------------:|
+|:--------------------------------------------------------:|:-------------------------------------------------------------:|
 |![](data/img/nike_dist_rv.png "Nike Resale Distribution") |  ![](data/img/jordan_dist_rv.png "Jordan Resale Distribution")|
 
 Because of this, I believe my random forest regressor, which uses mean squared error as a loss function, uses the mean of the respective sneaker’s resale value. This leads to poor performance in terms of predicting the resale value.
