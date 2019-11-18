@@ -20,7 +20,7 @@ I scraped data from StockX.com. Using beautiful soup, I was able to scrape 765 J
 
 The images were main profile views of the sneakers. Some sneakers on stockX even had 36 images of the entire sneaker.
 
-![](data/img/jordan_4_retro_bred_img.jpg "Jordan 4 Bred")
+![](data/img/mix_shoe.gif "Image Demo")
 
 I was able to store the images into an AWS S3 bucket while the rest of the was data was stored into a pandas data frame.
 
