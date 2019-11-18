@@ -24,6 +24,12 @@ The images were main profile views of the sneakers. Some sneakers on stockX even
 
 I was able to store the images into an AWS S3 bucket while the rest of the was data was stored into a pandas data frame.
 
+# Creating Flip Target:
+
+StockX.com charges a 12.5% fee of the selling price for first time sellers. I created a binary classifier and labeled the anything with the below equation a flip.
+
+- <img src="https://latex.codecogs.com/gif.latex?O_t=\text v_{resale} - 0.125v_{resale} > v_{retail} " /> 
+
 
 # Features for Models:
 Most of the features I was able to collect for each sneaker were categorical. These features were either directly from the website data itself or extracted from the name of the sneaker.
@@ -65,7 +71,6 @@ The Nike model’s main concern is it is not predicting many sneakers to be a fl
 The Jordan model is a bit better. The model is classifying more sneakers are a flip than the Nike model while maintaining the same amount of precision. 
 
 ### Random Forest Regressor
-Predicting actual resale price: Random Forest Regressor
 
 Using the same features as above and a Random Forest, I predicted the actual resale value of these sneakers. Unfortunately it did not do that well.
 
@@ -91,19 +96,21 @@ I believe this is due to my data I have collected. There are sneakers in my data
 |:--------------------------------------------------------:|:-------------------------------------------------------------:|
 |![](data/img/nike_dist_rv.png "Nike Resale Distribution") |  ![](data/img/jordan_dist_rv.png "Jordan Resale Distribution")|
 
-Because of this, I believe my random forest regressor, which uses mean squared error as a loss function, uses the mean of the respective sneaker’s resale value. This leads to poor performance in terms of predicting the resale value.
+I believe my random forest regressor, which uses mean squared error as a loss function, inherently predicts the mean of the respective sneaker’s resale value. This leads to poor performance in terms of predicting the resale value.
 
 
 # Analysis:
 As someone that would be purchasing the sneakers at retail to make a profit reselling them, there is value here. 
 
-For my classifying models, due to their solid precision, if my model were to classify a sneaker as a flip there is a good chance that the sneaker will. Using a more detailed look, we can go to the respective model’s ROC curves:
+Due to their solid precision, if my models were to classify a sneaker as a flip there is a good chance that the sneaker will. Using a more detailed look, we can go to the respective model’s ROC curves:
 
 |Nike                                                      |  Jordan                                                       | 
 |:--------------------------------------------------------:|:-------------------------------------------------------------:|
 |![](data/img/nike_roc.png "Nike ROC")                     |  ![](data/img/jordan_roc.png "Jordan ROC")                    |
 
 Calculating the Area Under the Curve (AUC) we get scores of 0.78831 for Nike and 0.75188 for Jordan. These are encouraging numbers and boost the confidence of a sneaker buyer to purchase at retail the sneakers my model has classified as flip.
+
+I also found that Nike Sneakers have a higher ceiling when it comes to the resale value. Nike’s have a $250 dollar increase in the standard deviation of the resale value when compared to the standard deviation of Jordan’s. Buying one Nike sneaker my model classifies as a flip would give you the same confidence as a pair of Jordan sneakers, however the profit made from the Nike sneaker could be a lot more.
 
 
 # Next Steps:
