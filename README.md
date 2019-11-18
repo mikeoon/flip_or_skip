@@ -26,7 +26,7 @@ I was able to store the images into an AWS S3 bucket while the rest of the was d
 
 # Creating Flip Target:
 
-StockX.com charges a 12.5% fee of the selling price for first time sellers. I created a binary classifier and labeled the anything with the below equation a flip.
+StockX.com charges a 12.5% fee of the selling price for first time sellers. I created a binary classifier and labeled all sneakers with the below equation a flip.
 
 ![equation](https://latex.codecogs.com/gif.latex?%20v_{resale}%20-%200.125v_{resale}%20>%20v_{retail})
 
@@ -45,6 +45,9 @@ Once my features were prepped, these are the features currently used for my mode
 * Day of the Week Released
 * Month Sneaker was Released
 * Retail Price
+
+Target column for the classifier is flip
+Target column for the regressor is avg_resale
 
 
 # Model:
