@@ -82,14 +82,14 @@ Using the same features as above and a Random Forest, I predicted the actual res
 | Loss Function                 | Value         | 
 | ------------------------------|:-------------:|
 | Mean Squared Error            | 522,335.77    |
-| Root Mean Absolute Error      | $722.73       |
+| Root Mean Squared Error       | $722.73       |
 | Mean Absolute Error           | $165.15       |
 
 #### Jordan
 | Loss Function                 | Value         |
 | ------------------------------|:-------------:|
 | Mean Squared Error            | 236,946.70    |
-| Root Mean Absolute Error      | $486.77       |
+| Root Mean Squared Error       | $486.77       |
 | Mean Absolute Error           | $188.67       |
 
 
