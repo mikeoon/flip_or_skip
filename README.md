@@ -87,9 +87,9 @@ Using the same features as above and a Random Forest, I predicted the actual res
 I believe this is due to my data I have collected. There are sneakers in my dataset that have extremely high resale value. My mean for Nike resale value is 253.91 with a standard diviation of 565.99. For Jordan my mean is 256.14 with a standard deviation of 312.59. My dataset is skewed when it comes to the resale values of sneakers:
 
  
-Nike                                                      |  Jordan
-:-------------------------------------------------------_:|:-------------------------------------------------------------:
-![](data/img/nike_dist_rv.png "Nike Resale Distribution") |  ![](data/img/jordan_dist_rv.png "Jordan Resale Distribution")
+|Nike                                                      |  Jordan                                                       | 
+|:-------------------------------------------------------_:|:-------------------------------------------------------------:|
+|![](data/img/nike_dist_rv.png "Nike Resale Distribution") |  ![](data/img/jordan_dist_rv.png "Jordan Resale Distribution")|
 
 Because of this, I believe my random forest regressor, which uses mean squared error as a loss function, uses the mean of the respective sneaker’s resale value. This leads to poor performance in terms of predicting the resale value.
 
