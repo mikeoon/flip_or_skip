@@ -5,6 +5,9 @@ High profile sneakers are difficult to purchase upon their retail release. If yo
 Are they worth purchasing to resell? (Flip)
 Or should we just avoid buying them? (Skip)
 
+##### A plot showing sneaker retail prices and resale prices for 50 Nike Sneakers
+![alt text](data/img/flip_or_skip_plt.png "retail v resale")
+
 # Data Collection and Process:
 I scraped data from StockX.com. Using beautiful soup, I was able to scrape 765 Jordan sneakers and 922 Nike sneakers. I removed grade school, toddler, and preschool sneakers. I was also able to scrape features of the sneakers such as:
 
@@ -67,7 +70,7 @@ Predicting actual resale price: Random Forest Regressor
 Using the same features as above and a Random Forest, I predicted the actual resale value of these sneakers. Unfortunately it did not do that well.
 
 #### Nike
-| Loss Function                 | Value         |
+| Loss Function                 | Value         | 
 | ------------------------------|:-------------:|
 | Mean Squared Error            | 522,335.77    |
 | Root Mean Absolute Error      | $722.73       |
