@@ -28,7 +28,7 @@ I was able to store the images into an AWS S3 bucket while the rest of the was d
 
 StockX.com charges a 12.5% fee of the selling price for first time sellers. I created a binary classifier and labeled the anything with the below equation a flip.
 
-- <img src="https://latex.codecogs.com/gif.latex?O_t=\text v_{resale} - 0.125v_{resale} > v_{retail} " /> 
+![equation](https://latex.codecogs.com/gif.latex?%20v_{resale}%20-%200.125v_{resale}%20>%20v_{retail})
 
 
 # Features for Models:
