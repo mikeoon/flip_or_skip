@@ -47,6 +47,7 @@ Once my features were prepped, these are the features currently used for my mode
 * Retail Price
 
 Target column for the classifier is flip
+
 Target column for the regressor is avg_resale
 
 
