@@ -99,9 +99,11 @@ As someone that would be purchasing the sneakers at retail to make a profit rese
 
 For my classifying models, due to their solid precision, if my model were to classify a sneaker as a flip there is a good chance that the sneaker will. Using a more detailed look, we can go to the respective model’s ROC curves:
 
-[IMAGE: ROC curves]
+|Nike                                                      |  Jordan                                                       | 
+|:--------------------------------------------------------:|:-------------------------------------------------------------:|
+|![](data/img/nike_roc.png "Nike ROC")                     |  ![](data/img/jordan_roc.png "Jordan ROC")                    |
 
-Calculating the Area Under the Curve (AUC) we get scores of 0.75286 for Nike and 0.750997 for Jordan. These are encouraging numbers and boost the confidence of a sneaker buyer to purchase at retail the sneakers my model has classified as flip.
+Calculating the Area Under the Curve (AUC) we get scores of 0.78831 for Nike and 0.75188 for Jordan. These are encouraging numbers and boost the confidence of a sneaker buyer to purchase at retail the sneakers my model has classified as flip.
 
 
 # Next Steps:
