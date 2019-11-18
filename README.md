@@ -30,8 +30,6 @@ StockX.com charges a 12.5% fee of the selling price for first time sellers. I cr
 
 ![equation](https://latex.codecogs.com/gif.latex?%20v_{resale}%20-%200.125v_{resale}%20>%20v_{retail})
 
-$$v_{resale} - 0.125v_{resale} > v_{retail}$$
-
 
 # Features for Models:
 Most of the features I was able to collect for each sneaker were categorical. These features were either directly from the website data itself or extracted from the name of the sneaker.
