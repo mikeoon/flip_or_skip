@@ -19,7 +19,9 @@ def print_confusion_mat(tn, fp, fn, tp):
     print(f'False Negatives: {fn} | False Positives: {fp}')
 
 
-def create_model_df(brand):
+
+
+def prep_model_data(brand):
 	'''
 	Creates the dataframe for the model
 	All rows in the dataframe can be fed into the model
@@ -31,13 +33,18 @@ def create_model_df(brand):
 	returns X and y
 	''' 
 
-	df = cs.combine_shoe_pkls(brand)
+	return cs.combine_shoe_pkls(brand)
+
+
+def create_data_split(df, brand):
 	X, y = sp.flip_skip_pipeline(df, brand)
+	X_train, X_test, y_train, y_test = train_test_split(X, y)
+	
+	return X_train, X_test, y_train, y_test
 
-	return X, y
 
 
-def create_flipskip_rfc(X, y, brand):
+def create_flipskip_rfc(X_train, y_train, brand):
 	'''
 	Creates RandomForestCalssifier Models for nike and air_jordan
 	Fits the model with the given X and y, will train test split
@@ -50,8 +57,6 @@ def create_flipskip_rfc(X, y, brand):
 	elif brand =='air_jordan':
 		rfc = RandomForestClassifier(criterion='entropy',max_depth= 19.0, n_estimators=100)
 
-	X_train, X_test, y_train, y_test = train_test_split(X, y)
-
 	rfc.fit(X_train, y_train)
 
-	return rfc, X_test, y_test
+	return rfc
