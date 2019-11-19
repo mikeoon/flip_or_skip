@@ -10,11 +10,27 @@ from sklearn.metrics import confusion_matrix
 
 
 def print_confusion_mat(tn, fp, fn, tp):
+	'''
+	Prints the confusion matrix of a model's prediction
+
+	returns None
+	'''
     print(f'True Negatives: {tn}  | True Positives: {tp}')
     print(f'False Negatives: {fn} | False Positives: {fp}')
 
 
 def create_model_df(brand):
+	'''
+	Creates the dataframe for the model
+	All rows in the dataframe can be fed into the model
+	Splits up the data into X, y
+
+	X = current model features accepted by model
+	y = targets (flip or not)
+
+	returns X and y
+	''' 
+
 	df = cs.combine_shoe_pkls(brand)
 	X, y = sp.flip_skip_pipeline(df, brand)
 
@@ -22,6 +38,13 @@ def create_model_df(brand):
 
 
 def create_flipskip_rfc(X, y, brand):
+	'''
+	Creates RandomForestCalssifier Models for nike and air_jordan
+	Fits the model with the given X and y, will train test split
+
+	Returns the fit RandomForestClassifier and the X_test and y_test that go along
+	'''
+
 	if brand == 'nike':
 		rfc = RandomForestClassifier(max_depth=17.0, n_estimators=50)
 	elif brand =='air_jordan':
