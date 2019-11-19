@@ -122,10 +122,13 @@ I also found that Nike Sneakers have a higher ceiling when it comes to the resal
 All but one of my features my model currently uses are categorical. A few features I want to use for my next models are:
 
 1. Social Media Impact
+
    I want to feature engineer the social media presence of a sneaker. I can help my models predict which sneakers are highly anticipated by the public using metrics like impressions and number of shares across major social media platforms. With these features, I believe I can quantify the build-up or anticipation of a release. In the sneakerhead world is known as the “hype” behind a sneaker. Currently, my model does not have any outside data to estimate the “hype” from the public but the incorporation of these features would be the first step in that direction.
 
 2. Images of the sneakers
+
    I was able to scrape countless clean images of all the sneakers that are in my model. These images are the perfect candidates for image processing. Each image has the main profile view of the sneaker as well as multiple other rotational views. I believe I can help boost the strength of my models by using tools like TensorFlow to create a Convolutional Neural Network. My model is able to process both color and grayscale images. With the grayscale images in particular, I hope to focus and learn more about the silhouette of the sneaker rather than using it just as a categorical feature.
 
+3. Train RFR on Less Skewed Dataset
 
-For my model for predicting the resale value of a sneaker, I want to try and remove some of the skewed data points. I believe that currently I do not have enough data to accurately predict higher price premiums. With a less skewed dataset, I hope to create a model that will accurately predict the majority of resale value seen from these sneakers. This will be a better baseline model to improve upon.
+   For my model for predicting the resale value of a sneaker, I want to try and remove some of the skewed data points. I believe that currently I do not have enough data to accurately predict higher price premiums. With a less skewed dataset, I hope to create a model that will accurately predict the majority of resale value seen from these sneakers. This will be a better baseline model to improve upon.
